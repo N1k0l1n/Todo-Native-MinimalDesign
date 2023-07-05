@@ -1,13 +1,15 @@
-// import {Provider} from 'react-redux';
 import Home from './screens/Home';
 import AddTodo from './screens/AddTodo'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import {store} from './redux/store';
+import {Provider} from 'react-redux';
 
 const Stack = createStackNavigator();
 
 export default function App() {
   return (
+    <Provider store={store}>
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
@@ -22,6 +24,7 @@ export default function App() {
         />
       </Stack.Navigator>
     </NavigationContainer>
+    </Provider>
   );
 }
 

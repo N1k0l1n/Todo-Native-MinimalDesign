@@ -1,11 +1,12 @@
-import { StyleSheet, Text, View, Switch, TouchableOpacity, TextInput } from 'react-native'
-import React, { useState } from 'react'
+import { StyleSheet, Text, View, Switch, TouchableOpacity, TextInput, Modal, Button } from 'react-native';
+import React, { useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-const AddTodo = () => {
+const AddTodo = ({ navigation }) => {
   const [name, setName] = useState('');
   const [date, setDate] = useState(new Date());
   const [isToday, setIsToday] = useState(false);
+  const [showClock, setShowClock] = useState(false);
 
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -17,13 +18,28 @@ const AddTodo = () => {
   };
 
   const handleDonePress = () => {
-    // Handle saving the task with the captured details
-    // You can access the task name, date, and isToday value here
+    const newTask = {
+      name: name,
+      date: date,
+      isToday: isToday,
+    };
+
+    console.log("New Task:", newTask);
+
+    setName('');
+    setDate(new Date());
+    setIsToday(false);
+
+    navigation.navigate("Home");
+  };
+
+  const handleClockModal = () => {
+    setShowClock(!showClock);
   };
 
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.title}>Add Task</Text>
+      <Text style={styles.title}>Add Task</Text>
       <View style={styles.inputContainer}>
         <Text>Name</Text>
         <TextInput
@@ -35,12 +51,17 @@ const AddTodo = () => {
       </View>
       <View style={styles.inputContainer}>
         <Text>Hour</Text>
-        <DateTimePicker
-          value={date}
-          mode="time"
-          display="default"
-          onChange={handleDateChange}
-        />
+        <TouchableOpacity onPress={handleClockModal}>
+          <Text>{date.toLocaleTimeString()}</Text>
+        </TouchableOpacity>
+        {showClock && (
+          <DateTimePicker
+            value={date}
+            mode="time"
+            display="default"
+            onChange={handleDateChange}
+          />
+        )}
       </View>
       <View style={styles.inputContainer}>
         <Text>Today</Text>
@@ -51,7 +72,7 @@ const AddTodo = () => {
       </TouchableOpacity>
       <Text style={styles.infoText}>
         If you disable today, the task will be considered as tomorrow.
-      </Text> */}
+      </Text>
     </View>
   );
 }
@@ -82,7 +103,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   button: {
-    backgroundColor: '#3478f6',
+    backgroundColor: '#000000',
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',

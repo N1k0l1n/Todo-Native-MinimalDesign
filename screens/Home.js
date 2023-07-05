@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
 import { todosData } from '../data/todos';
-// import TodoList from './TodoList';
+import TodoList from '../components/TodoList';
 
 const Home = () => {
   const [localData, setLocalData] = useState(
@@ -42,10 +42,10 @@ const Home = () => {
           </Text>
         </TouchableOpacity>
       </View>
-      {/* <TodoList todosData={localData.filter(todo => todo.isToday)} /> */}
+      <TodoList todosData={localData.filter(todo => todo.isToday)} />
 
       <Text style={styles.title}>Tomorrow</Text>
-      {/* <TodoList todosData={localData.filter(todo => !todo.isToday)} /> */}
+      <TodoList todosData={localData.filter(todo => !todo.isToday)} />
 
       <TouchableOpacity
         onPress={() => navigation.navigate("Add")}
@@ -66,8 +66,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   pic: {
+    marginTop: 30,
     width: 42,
     height: 42,
+    borderRadius: 21,
+    position: 'absolute',
+    top: 10,
+    right: 10,
   },
   header: {
     flexDirection: 'row',
@@ -76,18 +81,19 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   title: {
-    fontSize: 20,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#000',
   },
   hideText: {
     color: '#3478f6',
+    marginTop: 20,
   },
   button: {
     position: 'absolute',
     bottom: 20,
     right: 20,
-    backgroundColor: '#3478f6',
+    backgroundColor: '#000',
     borderRadius: 30,
     width: 60,
     height: 60,
