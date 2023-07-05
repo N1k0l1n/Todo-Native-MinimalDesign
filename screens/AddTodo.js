@@ -1,47 +1,50 @@
-import { StyleSheet, Text, View, Switch, TouchableOpacity, TextInput, Modal, Button } from 'react-native';
 import React, { useState } from 'react';
+import { StyleSheet, Text, View, Switch, TouchableOpacity, TextInput } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useDispatch, useSelector } from 'react-redux';
+import { addTodoReducer } from '../redux/todoSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
-const AddTodo = ({ navigation }) => {
+const AddTodo = () => {
   const [name, setName] = useState('');
   const [date, setDate] = useState(new Date());
-  const [isToday, setIsToday] = useState(false);
-  const [showClock, setShowClock] = useState(false);
+  const [isToday, setIsToday] = useState(true);
+  const listTodos = useSelector(state => state.todos.todos);
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  const addTodo = async () => {
+    const newTodo = {
+      id: Math.floor(Math.random() * 1000000),
+      text: name,
+      hour: date.toString(),
+      isToday: isToday,
+      isCompleted: false,
+    }
+    try {
+      await AsyncStorage.setItem("@Todos", JSON.stringify([...listTodos, newTodo]));
+      dispatch(addTodoReducer(newTodo));
+      console.log("Todos added successfully");
+      navigation.goBack();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const handleDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setDate(currentDate);
-  };
-
-  const handleToggleToday = () => {
-    setIsToday(!isToday);
-  };
-
-  const handleDonePress = () => {
-    const newTask = {
-      name: name,
-      date: date,
-      isToday: isToday,
-    };
-
-    console.log("New Task:", newTask);
-
-    setName('');
-    setDate(new Date());
-    setIsToday(false);
-
-    navigation.navigate("Home");
-  };
-
-  const handleClockModal = () => {
-    setShowClock(!showClock);
+    if (selectedDate) {
+      setDate(selectedDate);
+    }
+    setShowClock(false);
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Add Task</Text>
       <View style={styles.inputContainer}>
-        <Text>Name</Text>
+        <Text style={styles.label}>Name</Text>
         <TextInput
           style={styles.input}
           value={name}
@@ -50,25 +53,35 @@ const AddTodo = ({ navigation }) => {
         />
       </View>
       <View style={styles.inputContainer}>
-        <Text>Hour</Text>
-        <TouchableOpacity onPress={handleClockModal}>
-          <Text>{date.toLocaleTimeString()}</Text>
+        <Text style={styles.label}>Hour</Text>
+        <TouchableOpacity style={styles.clockContainer} onPress={() => setSelectedDate(date)}>
+          <Text style={styles.clockText}>{date.toLocaleTimeString()}</Text>
         </TouchableOpacity>
-        {showClock && (
+        {selectedDate && (
           <DateTimePicker
-            value={date}
+            value={selectedDate}
             mode="time"
-            display="default"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
             onChange={handleDateChange}
           />
         )}
       </View>
       <View style={styles.inputContainer}>
-        <Text>Today</Text>
-        <Switch value={isToday} onValueChange={handleToggleToday} />
+        <Text style={styles.label}>Today</Text>
+        <View style={styles.switchContainer}>
+          <Text style={styles.switchLabel}>No</Text>
+          <Switch
+            style={styles.switch}
+            value={isToday}
+            onValueChange={value => setIsToday(value)}
+            trackColor={{ false: "#CCCCCC", true: "#CCCCCC" }}
+            thumbColor={isToday ? "#000000" : "#FFFFFF"}
+          />
+          <Text style={styles.switchLabel}>Yes</Text>
+        </View>
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleDonePress}>
-        <Text style={{ color: 'white' }}>Done</Text>
+      <TouchableOpacity style={styles.button} onPress={addTodo}>
+        <Text style={styles.buttonText}>Done</Text>
       </TouchableOpacity>
       <Text style={styles.infoText}>
         If you disable today, the task will be considered as tomorrow.
@@ -77,30 +90,48 @@ const AddTodo = ({ navigation }) => {
   );
 }
 
-export default AddTodo;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F7F8FA',
-    paddingHorizontal: 30,
-    paddingTop: 40,
+    padding: 30,
   },
   title: {
-    fontSize: 34,
+    fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 25,
   },
   inputContainer: {
     marginBottom: 20,
   },
+  label: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
   input: {
-    borderWidth: 1,
     borderColor: '#CCCCCC',
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginTop: 8,
+  },
+  clockContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  clockText: {
+    fontSize: 16,
+    marginRight: 10,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  switchLabel: {
+    fontSize: 16,
+    marginRight: 10,
+  },
+  switch: {
+    transform: [{ scaleX: 0.9 }, { scaleY: 0.9 }],
+    marginRight: 10,
   },
   button: {
     backgroundColor: '#000000',
@@ -109,8 +140,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+  },
   infoText: {
     color: '#00000060',
     marginTop: 20,
   },
 });
+
+export default AddTodo;
