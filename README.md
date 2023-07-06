@@ -1,3 +1,7 @@
+
+
+https://github.com/N1k0l1n/Todo-Native-MinimalDesign/assets/97979235/a7370bf7-8c00-4f1b-aec1-8419a42bb8c3
+
 # Todo-Native-MinimalDesign 
 
 
