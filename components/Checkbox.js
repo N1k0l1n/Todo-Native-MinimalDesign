@@ -1,47 +1,88 @@
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React from "react";
 import { Entypo } from "@expo/vector-icons";
+import { useDispatch, useSelector } from 'react-redux';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { updateTodoReducer } from '../redux/todoSlice';
 
-const Checkbox = ({ id, text, isCompleted, isToday, hour }) => {
-  return isToday ? (
-    <TouchableOpacity style={isCompleted ? styles.checked : styles.unChecked}>
-      {isCompleted && <Entypo name="check" size={16} color="FAFAFA" />}
-    </TouchableOpacity>
-  ) : (
-    <View style={styles.isToday} />
-  );
-};
 
-export default Checkbox;
+
+export default function Checkbox({id, isCompleted, isToday, text, hour}) {
+
+  const dispatch = useDispatch();
+  const listTodos = useSelector(state => state.todos.todos);
+
+  const handleCheckbox = () => {
+    try {
+      dispatch(updateTodoReducer({id, isCompleted}));
+      AsyncStorage.setItem('Todos', JSON.stringify(
+        listTodos.map(todo => { 
+          if(todo.id === id) {
+            return {...todo, isCompleted: !todo.isCompleted};
+          }
+          return todo;
+        }
+      )));
+      console.log('Todo saved correctly');
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+    return isToday ? (
+      <TouchableOpacity onPress={handleCheckbox} style={isCompleted ? styles.checked : styles.unChecked}>
+        {isCompleted && <Entypo name="check" size={16} color="#FAFAFA" />}
+      </TouchableOpacity>
+    ) : (
+      <View style={styles.isToday} />
+    );
+  }
+  
 
 const styles = StyleSheet.create({
-  checked: {
-    width: 20,
-    height: 20,
-    marginRight: 13,
-    borderRadius: 6,
-    backgroundColor: "#262626",
-    alignItems: 'center',
-    marginLeft: 15
-  },
-  unChecked: {
-    // Define styles for unchecked checkbox
-    width: 20,
-    height: 20,
-    marginRight: 13,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: "#262626",
-    alignItems: 'center',
-    marginLeft: 15
-  },
-  isToday: {
-    // Define styles for isToday indicator
-    width: 10,
-    height: 10,
-    marginRight: 13,
-    borderRadius: 5,
-    backgroundColor: "#262626",
-    marginLeft: 15
-  },
-});
+    checked: {
+        width: 20,
+        height: 20,
+        marginRight: 13,
+        borderRadius: 6,
+        backgroundColor: '#262626',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 15,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: .3,
+        shadowRadius: 5,
+        elevation: 5,
+    },
+    unChecked: {
+        width: 20,
+        height: 20,
+        marginRight: 13,
+        borderWidth: 2,
+        borderColor: '#E8E8E8',
+        borderRadius: 6,
+        backgroundColor: '#fff',
+        marginLeft: 15,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: .1,
+        shadowRadius: 5,
+        elevation: 5,
+    },
+    isToday: {
+        width: 10,
+        height: 10,
+        marginHorizontal: 10,
+        borderRadius: 10,
+        backgroundColor: '#262626',
+        marginRight: 13,
+        marginLeft: 15,
+    },
+})

@@ -1,31 +1,19 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState } from "react";
-import { todosData } from '../data/todos';
+import { useSelector, useDispatch } from 'react-redux'
+import { hideCompletedReducer } from '../redux/todoSlice'
 import TodoList from '../components/TodoList';
 
 const Home = () => {
-  const [localData, setLocalData] = useState(
-    todosData.sort((a, b) => {
-      return a.isCompleted - b.isCompleted;
-    })
-  );
-
+  const todos = useSelector(state => state.todos.todos);
+  const dispatch = useDispatch();
   const [isHidden, setIsHidden] = useState(false);
   const navigation = useNavigation();
 
   const handleHidePress = () => {
-    if (isHidden) {
-      setIsHidden(false);
-      setLocalData(
-        todosData.sort((a, b) => {
-          return a.isCompleted - b.isCompleted;
-        })
-      );
-      return;
-    }
     setIsHidden(!isHidden);
-    setLocalData(localData.filter((todo) => !todo.isCompleted));
+    dispatch(hideCompletedReducer());
   };
 
   return (
@@ -42,10 +30,10 @@ const Home = () => {
           </Text>
         </TouchableOpacity>
       </View>
-      <TodoList todosData={localData.filter(todo => todo.isToday)} />
+      <TodoList todosData={todos.filter(todo => todo.isToday && (!isHidden || !todo.isCompleted))} />
 
       <Text style={styles.title}>Tomorrow</Text>
-      <TodoList todosData={localData.filter(todo => !todo.isToday)} />
+      <TodoList todosData={todos.filter(todo => !todo.isToday && (!isHidden || !todo.isCompleted))} />
 
       <TouchableOpacity
         onPress={() => navigation.navigate("Add")}
