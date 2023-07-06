@@ -31,7 +31,8 @@ export const todosSlice = createSlice({
     },
     deleteTodoReducer: (state, action) => {
       const id = action.payload;
-      const todos = state.todos.filter((todo) => todo.id === id);
+            const todos = state.todos.filter(todo => todo.id !== id);
+            state.todos = todos;
     },
   },
 });
