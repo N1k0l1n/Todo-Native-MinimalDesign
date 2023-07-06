@@ -82,7 +82,7 @@ This template follows a very simple project structure:
   - `test-utils`: Folder to store tests-related utilities and components.
   - `theme`: Folder to store all the styling concerns related to the application theme.
   - `App.js`: Main component that starts your whole app.
-  - `index.js`: Entry point of your application as per React-Native standards.
+  - `index.js`: Entry point of your application as per React-Native standards .
 
 ## Splash screen customization
 
