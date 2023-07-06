@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from "react";
 import { useSelector, useDispatch } from 'react-redux'
 import { hideCompletedReducer } from '../redux/todoSlice'

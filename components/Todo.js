@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import Checkbox from "./Checkbox";
-import moment from "moment";
 
 const Todo = ({ id, text, isCompleted, isToday, hour }) => {
+  const [localHour, setLocalHour] = useState(new Date(hour));
+
   return (
     <View style={styles.container}>
       <Checkbox
@@ -19,7 +20,7 @@ const Todo = ({ id, text, isCompleted, isToday, hour }) => {
             isCompleted
               ? [
                   styles.text,
-                  { textDecorationLine: "line-through", color: "#7845" },
+                  { textDecorationLine: "line-through", color: "#737373" },
                 ]
               : styles.text
           }
@@ -31,12 +32,13 @@ const Todo = ({ id, text, isCompleted, isToday, hour }) => {
             isCompleted
               ? [
                   styles.time,
-                  { textDecorationLine: "line-through", color: "#7845" },
+                  { textDecorationLine: "line-through", color: "#737373" },
                 ]
               : styles.time
           }
         >
-          {hour}
+          {new Date(hour).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
         </Text>
       </View>
     </View>
@@ -53,7 +55,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 15,
-    fontWeight: '500',
+    fontWeight: "500",
     color: "#737373",
   },
   time: {
